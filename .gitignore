@@ -4,7 +4,7 @@ node_modules
 .build
 .idea
 web_modules
-dist
-dist-commonjs
+# dist
+# dist-commonjs
 types
 coverage
