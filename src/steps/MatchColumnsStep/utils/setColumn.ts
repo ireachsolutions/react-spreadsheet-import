@@ -9,11 +9,17 @@ export const setColumn = <T extends string>(
 ): Column<T> => {
   switch (field?.fieldType.type) {
     case "select":
+      const uniqueData = uniqueEntries(data || [], oldColumn.index)
+      const matchedOptions = uniqueData?.map(option => {
+        const value = (field.fieldType as any).options.find((o: any) => o.value == option.value || o.label == option.entry || o.value == option.entry)?.value
+        return value ? { ...option, value } : option
+      });
+      const allMatched = matchedOptions.filter(o => o.value).length == uniqueData?.length
       return {
         ...oldColumn,
-        type: ColumnType.matchedSelect,
+        type: allMatched ? ColumnType.matchedSelectOptions : ColumnType.matchedSelect,
         value: field.key,
-        matchedOptions: uniqueEntries(data || [], oldColumn.index),
+        matchedOptions: matchedOptions as any
       }
     case "checkbox":
       return { index: oldColumn.index, type: ColumnType.matchedCheckbox, value: field.key, header: oldColumn.header }

@@ -80,6 +80,32 @@ const fields = [
     },
     example: "true",
   },
+  {
+    label: "Type",
+    key: "type",
+    alternateMatches: ["type"],
+    fieldType: {
+      type: "select",
+      options: [
+        { label: "abc", value: "1" },
+        { label: "def", value: "2" },
+      ],
+    },
+    example: "true",
+  },
+  {
+    label: "Type2",
+    key: "type2",
+    alternateMatches: ["type2"],
+    fieldType: {
+      type: "select",
+      options: [
+        { label: "xyz", value: "1" },
+        { label: "def", value: "2" },
+      ],
+    },
+    example: "true",
+  }
 ] as const
 
 const mockComponentBehaviourForTypes = <T extends string>(props: RsiProps<T>) => props

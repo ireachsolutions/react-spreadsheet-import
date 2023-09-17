@@ -21,9 +21,8 @@ import type { Styles } from "./ColumnGrid"
 
 const getAccordionTitle = <T extends string>(fields: Fields<T>, column: Column<T>, translations: Translations) => {
   const fieldLabel = fields.find((field) => "value" in column && field.key === column.value)!.label
-  return `${translations.matchColumnsStep.matchDropdownTitle} ${fieldLabel} (${
-    "matchedOptions" in column && column.matchedOptions.length
-  } ${translations.matchColumnsStep.unmatched})`
+  return `${translations.matchColumnsStep.matchDropdownTitle} ${fieldLabel} (${"matchedOptions" in column && (column.matchedOptions.length - column.matchedOptions.filter(o => o.value).length)
+    } ${translations.matchColumnsStep.unmatched})`
 }
 
 type TemplateColumnProps<T extends string> = {
@@ -43,6 +42,7 @@ export const TemplateColumn = <T extends string>({ column, onChange, onSubChange
   const isSelect = "matchedOptions" in column
   const selectOptions = fields.map(({ label, key }) => ({ value: key, label }))
   const selectValue = selectOptions.find(({ value }) => "value" in column && column.value === value)
+  const isAllSelectMatched = "matchedOptions" in column && (column.matchedOptions.length - column.matchedOptions.filter(o => o.value).length) == 0;
 
   return (
     <Flex minH={10} w="100%" flexDir="column" justifyContent="center">
@@ -62,7 +62,7 @@ export const TemplateColumn = <T extends string>({ column, onChange, onSubChange
             </Box>
             <MatchIcon isChecked={isChecked} />
           </Flex>
-          {isSelect && (
+          {isSelect && !isAllSelectMatched && (
             <Flex width="100%">
               <Accordion allowMultiple width="100%">
                 <AccordionItem border="none" py={1}>
@@ -81,9 +81,10 @@ export const TemplateColumn = <T extends string>({ column, onChange, onSubChange
                     </Box>
                   </AccordionButton>
                   <AccordionPanel pb={4} pr={3} display="flex" flexDir="column">
-                    {column.matchedOptions.map((option) => (
-                      <SubMatchingSelect option={option} column={column} onSubChange={onSubChange} key={option.entry} />
-                    ))}
+                    {column.matchedOptions.map((option) => {
+                      if ("value" in option) { return null; }
+                      return <SubMatchingSelect option={option} column={column} onSubChange={onSubChange} key={option.entry} />
+                    })}
                   </AccordionPanel>
                 </AccordionItem>
               </Accordion>
